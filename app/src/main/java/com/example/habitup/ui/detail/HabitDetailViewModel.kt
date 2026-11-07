@@ -65,7 +65,7 @@ class HabitDetailViewModel @Inject constructor(
             HabitDetailUiState(
                 habit = habit,
                 streak = StreakCalculator.calculate(habit.scheduleDays, completedDates, createdOn, today),
-                recentDays = StreakCalculator.recentDayStatuses(habit.scheduleDays, completedDates, today, HISTORY_DAYS),
+                recentDays = StreakCalculator.recentDayStatuses(habit.scheduleDays, completedDates, createdOn, today, HISTORY_DAYS),
                 isLoading = false,
             )
         }

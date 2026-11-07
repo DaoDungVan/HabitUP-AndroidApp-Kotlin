@@ -1,6 +1,7 @@
 package com.example.habitup.data.streak
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.LocalDate
 
@@ -54,5 +55,14 @@ class StreakCalculatorTest {
         val completed = setOf(createdOn, createdOn.plusDays(1))
         val rate = StreakCalculator.completionRate(everyDay, completed, createdOn, today)
         assertEquals(0.5f, rate, 0.001f)
+    }
+
+    @Test
+    fun `ngay truoc khi tao habit la NOT_TRACKED khong phai MISSED`() {
+        // Habit vừa tạo hôm nay -> cả 29 ngày trước đó chưa từng tồn tại, không được tính "bỏ lỡ".
+        val statuses = StreakCalculator.recentDayStatuses(everyDay, emptySet(), today, today, 30)
+        val beforeCreation = statuses.dropLast(1) // 29 ngày trước hôm nay
+        assertTrue(beforeCreation.all { it.second == DayStatus.NOT_TRACKED })
+        assertEquals(DayStatus.PENDING_TODAY, statuses.last().second)
     }
 }

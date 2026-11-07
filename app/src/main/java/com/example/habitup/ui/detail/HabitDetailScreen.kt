@@ -158,4 +158,5 @@ private fun statusColor(status: DayStatus): Color = when (status) {
     DayStatus.MISSED -> Color(0xFFD9772B)
     DayStatus.PENDING_TODAY -> Color(0xFFBFC6FF)
     DayStatus.NOT_DUE -> Color(0xFFE0E0E0)
+    DayStatus.NOT_TRACKED -> Color(0xFFF0F0F0)
 }

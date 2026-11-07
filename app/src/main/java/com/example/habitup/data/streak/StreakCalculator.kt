@@ -11,7 +11,7 @@ data class StreakInfo(
     val completionRate: Float,
 )
 
-enum class DayStatus { DONE, MISSED, NOT_DUE, PENDING_TODAY }
+enum class DayStatus { DONE, MISSED, NOT_DUE, PENDING_TODAY, NOT_TRACKED }
 
 /**
  * Tính streak theo "ngày phải làm" (scheduleDays) của một habit, không phải theo mọi ngày lịch.
@@ -104,16 +104,23 @@ object StreakCalculator {
         completionRate = completionRate(scheduleDays, completedDates, habitCreatedOn, today),
     )
 
-    /** Trạng thái từng ngày trong [days] ngày gần nhất (kể cả hôm nay) — dùng vẽ dải lịch sử. */
+    /**
+     * Trạng thái từng ngày trong [days] ngày gần nhất (kể cả hôm nay) — dùng vẽ dải lịch sử.
+     * Ngày trước [habitCreatedOn] luôn là NOT_TRACKED (habit chưa tồn tại) — nếu không có
+     * nhánh này, một habit vừa tạo hôm nay sẽ hiện hàng loạt ngày "bỏ lỡ" trước đó, trông như
+     * đã thất bại ngay từ đầu dù chưa từng được theo dõi.
+     */
     fun recentDayStatuses(
         scheduleDays: List<Int>,
         completedDates: Set<LocalDate>,
+        habitCreatedOn: LocalDate,
         today: LocalDate,
         days: Int,
     ): List<Pair<LocalDate, DayStatus>> =
         (days - 1 downTo 0).map { offset ->
             val date = today.minusDays(offset.toLong())
             val status = when {
+                date.isBefore(habitCreatedOn) -> DayStatus.NOT_TRACKED
                 !isDue(date, scheduleDays) -> DayStatus.NOT_DUE
                 date in completedDates -> DayStatus.DONE
                 date == today -> DayStatus.PENDING_TODAY
