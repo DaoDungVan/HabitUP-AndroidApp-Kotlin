@@ -1,0 +1,17 @@
+*.iml
+.gradle
+.kotlin
+/local.properties
+/.idea/
+# File giả, chỉ để build thử code trước khi kết nối Firebase thật.
+# XOÁ dòng này sau khi thay bằng google-services.json thật tải từ Firebase Console.
+app/google-services.json
+# Keystore ký bản release — BÍ MẬT, không commit.
+keystore.properties
+keystore/*.jks
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties

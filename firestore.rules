@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /users/{uid} {
+      // Chỉ chủ tài khoản mới đọc/ghi dữ liệu của chính mình.
+      match /habits/{habitId} {
+        allow read, delete: if isOwner(uid);
+        allow create, update: if isOwner(uid) && isValidHabit(request.resource.data);
+      }
+
+      match /completions/{completionId} {
+        allow read, delete: if isOwner(uid);
+        allow create: if isOwner(uid) && isValidCompletion(request.resource.data, completionId);
+      }
+    }
+
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    function isValidHabit(data) {
+      return data.keys().hasAll(['name', 'emoji', 'scheduleDays', 'reminderEnabled', 'reminderHour', 'archived'])
+          && data.name is string && data.name.size() > 0 && data.name.size() <= 60
+          && data.scheduleDays is list
+          && data.reminderHour is int && data.reminderHour >= 0 && data.reminderHour <= 23;
+    }
+
+    function isValidCompletion(data, id) {
+      // id cố định "{habitId}_{date}" — chặn ghi completion cho habit không khớp id document.
+      return data.habitId is string
+          && data.date is string
+          && id == data.habitId + '_' + data.date;
+    }
+  }
+}
