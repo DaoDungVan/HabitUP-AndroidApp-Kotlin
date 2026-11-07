@@ -142,13 +142,20 @@ private const val HISTORY_TITLE = "Lịch sử"
 private fun StatCard(emoji: String, value: String, label: String) {
     Card {
         Column(
-            Modifier.padding(16.dp),
+            Modifier.padding(horizontal = 16.dp, vertical = 18.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
         ) {
             Text(emoji, style = MaterialTheme.typography.headlineSmall)
             Text(value, style = MaterialTheme.typography.titleLarge)
-            Text(label, style = MaterialTheme.typography.bodySmall)
+            // lineHeight rộng hơn cỡ chữ mặc định một chút — tránh dấu nặng ("ệ", "ị"...)
+            // bị khung Card cắt mất phần dưới khi dòng chữ nằm sát cạnh đáy.
+            Text(
+                label,
+                style = MaterialTheme.typography.bodySmall.copy(
+                    lineHeight = MaterialTheme.typography.bodySmall.fontSize * 1.4,
+                ),
+            )
         }
     }
 }
