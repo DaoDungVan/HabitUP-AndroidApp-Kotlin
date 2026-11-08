@@ -12,20 +12,26 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
+interface ReminderScheduler {
+    /** Gọi lúc app khởi động: đảm bảo đã lên lịch, không phá chu kỳ nếu đã có (KEEP). */
+    fun scheduleIfNeeded()
+
+    /** Chạy ngay một lần, bỏ qua điều kiện giờ — để kiểm thử nhanh. */
+    fun runNowForTesting()
+}
+
 @Singleton
-class ReminderScheduler @Inject constructor(
+class ReminderSchedulerImpl @Inject constructor(
     @ApplicationContext private val context: Context,
-) {
+) : ReminderScheduler {
     private val workManager get() = WorkManager.getInstance(context)
 
-    /** Gọi lúc app khởi động: đảm bảo đã lên lịch, không phá chu kỳ nếu đã có (KEEP). */
-    fun scheduleIfNeeded() {
+    override fun scheduleIfNeeded() {
         val request = PeriodicWorkRequestBuilder<ReminderWorker>(1, TimeUnit.HOURS).build()
         workManager.enqueueUniquePeriodicWork(PERIODIC_NAME, ExistingPeriodicWorkPolicy.KEEP, request)
     }
 
-    /** Chạy ngay một lần, bỏ qua điều kiện giờ — để kiểm thử nhanh. */
-    fun runNowForTesting() {
+    override fun runNowForTesting() {
         val request = OneTimeWorkRequestBuilder<ReminderWorker>()
             .setInputData(workDataOf(ReminderWorker.KEY_FORCE to true))
             .build()

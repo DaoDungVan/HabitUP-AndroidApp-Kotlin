@@ -4,6 +4,8 @@ import com.example.habitup.data.HabitRepository
 import com.example.habitup.data.HabitRepositoryImpl
 import com.example.habitup.data.auth.AuthRepository
 import com.example.habitup.data.auth.AuthRepositoryImpl
+import com.example.habitup.work.ReminderScheduler
+import com.example.habitup.work.ReminderSchedulerImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -21,4 +23,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindHabitRepository(impl: HabitRepositoryImpl): HabitRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindReminderScheduler(impl: ReminderSchedulerImpl): ReminderScheduler
 }

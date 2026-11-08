@@ -3,6 +3,7 @@ package com.example.habitup.ui.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.habitup.data.auth.AuthRepository
+import com.example.habitup.work.ReminderScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -14,6 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val authRepository: AuthRepository,
+    private val reminderScheduler: ReminderScheduler,
 ) : ViewModel() {
 
     val email: StateFlow<String?> = authRepository.currentUser
@@ -23,4 +25,6 @@ class SettingsViewModel @Inject constructor(
     fun signOut() {
         viewModelScope.launch { authRepository.signOut() }
     }
+
+    fun testNotificationNow() = reminderScheduler.runNowForTesting()
 }

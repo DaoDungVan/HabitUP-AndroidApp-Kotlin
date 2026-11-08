@@ -6,6 +6,7 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.snapshots
 import com.google.firebase.auth.FirebaseAuth
+import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
@@ -52,12 +53,17 @@ class HabitRepositoryImpl @Inject constructor(
     override suspend fun getHabit(habitId: String): Habit? =
         habitsCollection().document(habitId).get().await().toObject(Habit::class.java)
 
+    // Không .await() ở đây: Firestore chỉ hoàn thành Task khi SERVER xác nhận, nên mạng chậm/mất
+    // mạng sẽ làm UI treo xoay vô thời hạn. Ghi local-cache là tức thì, app nên coi là "lưu xong"
+    // ngay lúc đó rồi để snapshot listener đồng bộ nền; lỗi (nếu có, ví dụ permission-denied) chỉ log.
     override suspend fun addHabit(habit: Habit) {
-        habitsCollection().add(habit).await()
+        habitsCollection().add(habit)
+            .addOnFailureListener { Log.e("HabitRepo", "addHabit lỗi", it) }
     }
 
     override suspend fun updateHabit(habit: Habit) {
-        habitsCollection().document(habit.id).set(habit).await()
+        habitsCollection().document(habit.id).set(habit)
+            .addOnFailureListener { Log.e("HabitRepo", "updateHabit lỗi", it) }
     }
 
     override suspend fun archiveHabit(habitId: String) {

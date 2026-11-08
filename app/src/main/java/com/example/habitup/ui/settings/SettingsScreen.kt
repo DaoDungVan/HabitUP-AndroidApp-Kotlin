@@ -45,6 +45,9 @@ fun SettingsScreen(onBack: () -> Unit, viewModel: SettingsViewModel = hiltViewMo
         ) {
             Text("Đang đăng nhập bằng", style = MaterialTheme.typography.titleMedium)
             Text(email ?: "—", style = MaterialTheme.typography.bodyLarge)
+            OutlinedButton(onClick = viewModel::testNotificationNow, modifier = Modifier.fillMaxWidth()) {
+                Text("Thử thông báo ngay")
+            }
             OutlinedButton(onClick = viewModel::signOut, modifier = Modifier.fillMaxWidth()) {
                 Text("Đăng xuất")
             }
